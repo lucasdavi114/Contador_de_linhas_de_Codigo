@@ -16,10 +16,12 @@ int clsc(int argc, char *argv[]){
     if(argv[1] != NULL){
         bool palavraValida = verificaNome(argv[1], NUM_CARACTERES);
 
-        // Verifico se o parâmetro digitado é válido.
-        if(palavraValida){
+        printf("Existem argumentos!!\n");
 
-        }
+        // Verifico se o parâmetro digitado é válido.
+        // if(palavraValida){
+
+        // }
         return EXIT_SUCCESS;
     }
     printf("Não existe parametro\n");
