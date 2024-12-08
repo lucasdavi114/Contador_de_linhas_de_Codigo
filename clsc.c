@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> // Usado pelo getpid, fork
+#include <locale.h>
 #include <sys/wait.h> // Usando pelo waitpid
 #include "clsc.h"
 
@@ -14,47 +14,73 @@ int main(int argc, char* argv[]) {
    ou forem passados parâmetros inválidos.
 */
 int clsc(int argc, char *argv[]){
-    int pid;
-    if(argc > 1){
-        bool palavraValida = verificaNome(argv[1], NUM_CARACTERES);
 
-        printf("Existem Parametros!!\n");
+    setlocale(LC_ALL, "pt-BR");
+
+    if(argc == 2){
+        bool palavraValida = verificaNome(argv[1], NUM_CARACTERES);
 
         // Verifico se o parâmetro digitado é válido.
         if(palavraValida){
-            printf("Existe um arquivo com esse nome!!\n");
             printf("Processo Pai %d Inicia...\n", getpid());
-            pid = fork();
-            if(pid == 0){
-                printf("\tProcesso Filho %d inicia...\n", getpid());
-                exit(EXIT_SUCCESS);
-            }else{
-                int status;
-                waitpid(pid, &status, 0);
-                printf("\tProcesso Filho finalizado...\n");
-                printf("Processo Pai %d Continua...\n", getpid());
-                printf("Processo Pai %d Finaliza...\n", getpid());
-                sleep(10);
-                exit(EXIT_SUCCESS);
-            }
+            
+            // Chamada de função do processoPai que cria o processo filho e exibe o prompt final.
+            processoPai();
         }else{
             printf("Não existe um arquivo com esse nome!!\n");
         }
         return EXIT_SUCCESS;
+    }else if(argc > 2){
+        printf("\nParâmetros demais sendo executados!\n");
     }
-    printf("Não existe parametro\n");
+    printf("\nÉ necessário passar o nome do Arquivo ou um diretório válido!\n");
     return EXIT_FAILURE;
 }
 
 // Verifica se existe um arquivo com o nome e a extensão .c no diretório atual, retorna true se existir, false se não.
-bool verificaNome(char* nome, size_t tam){
+bool verificaNome(const char* nome, size_t tam){
 
     FILE *arq;
-    if(arq = fopen(nome, "r")){
+    arq = fopen(nome, "r");
+    if(arq){
         fclose(arq);
         return true;
     }
-    fclose(arq);
     return false;
+}
 
+// Cria um processo filho, exibe as somas das linhas no terminal.
+pid_t processoPai(){
+    
+    pid_t pid = fork();
+    
+    if(pid == 0){
+        processoFilho();
+    }else{
+        int status;
+        waitpid(pid, &status, 0);
+        printf("\n- Código Fonte C:\n");
+        printf("\tNº de arquivos = \n");
+        printf("\tLinhas vazias = \n");
+        printf("\tLinhas de comentários = \n");
+        printf("\tLinhas de instruções = \n");
+
+        printf("\n- Tempo:\n");
+        printf("\tInício.....: \n");
+        printf("\tTérmino: \n");
+        printf("\tDuração: Segundos\n");
+
+        exit(EXIT_SUCCESS);
+    }
+}
+
+// Realiza as somas de todos os tipos de linhas.
+void processoFilho(){
+    
+    pid_t pidFilho = getpid();
+        
+    printf("\tProcesso Filho %d inicia...\n", pidFilho);
+    printf("\tProcesso Filho %d finaliza...\n", pidFilho);
+    
+    exit(EXIT_SUCCESS);
 }

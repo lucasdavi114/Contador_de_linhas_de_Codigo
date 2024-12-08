@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdbool.h>
+#include <stdbool.h> // Usado pelo tipo bool.
+#include <unistd.h> // Usado pelo getpid, fork
 
 #define NUM_CARACTERES 30
 #define EXTENSAO ".c"
@@ -12,4 +13,10 @@
 int clsc(int argc, char *argv[]);
 
 // Verifica se existe um arquivo com o nome e a extensão .c no diretório atual, retorna true se existir, false se não.
-bool verificaNome(char* nome, size_t tam);
+bool verificaNome(const char* nome, size_t tam);
+
+// Cria um processo filho, exibe as somas das linhas no terminal.
+pid_t processoPai();
+
+// Realiza as somas de todos os tipos de linhas.
+void processoFilho();
