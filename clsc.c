@@ -3,6 +3,7 @@
 #include <string.h>
 #include <locale.h>
 #include <sys/wait.h> // Usando pelo waitpid
+#include <time.h> // Requerido para ver o tempo de execução.
 #include "clsc.h"
 
 int main(int argc, char* argv[]) {
@@ -53,12 +54,15 @@ bool verificaNome(const char* nome, size_t tam){
 pid_t processoPai(){
     
     pid_t pid = fork();
-    
+    time_t tempoInicio, tempoFinal;
+    clock_t duracao = clock();
     if(pid == 0){
         processoFilho();
     }else{
+        tempoInicio = time(NULL);
         int status;
         waitpid(pid, &status, 0);
+        tempoFinal = time(NULL);
         printf("\n- Código Fonte C:\n");
         printf("\tNº de arquivos = \n");
         printf("\tLinhas vazias = \n");
@@ -66,9 +70,10 @@ pid_t processoPai(){
         printf("\tLinhas de instruções = \n");
 
         printf("\n- Tempo:\n");
-        printf("\tInício.....: \n");
-        printf("\tTérmino: \n");
-        printf("\tDuração: Segundos\n");
+        printf("\tInício.....: %s\n", asctime(gmtime(&tempoInicio)));
+        printf("\tTérmino: %s\n", asctime(gmtime(&tempoFinal)));
+        duracao = clock() - duracao;
+        printf("\tDuração: %lf Segundos\n", ((double)duracao)/((CLOCKS_PER_SEC/1000)));
 
         exit(EXIT_SUCCESS);
     }
@@ -78,7 +83,6 @@ pid_t processoPai(){
 void processoFilho(){
     
     pid_t pidFilho = getpid();
-        
     printf("\tProcesso Filho %d inicia...\n", pidFilho);
     printf("\tProcesso Filho %d finaliza...\n", pidFilho);
     
