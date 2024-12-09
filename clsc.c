@@ -39,23 +39,27 @@ int clsc(int argc, char *argv[]){
 }
 
 // Verifica se existe um arquivo com o nome e a extensão .c no diretório atual, retorna true se existir, false se não.
-bool verificaNome(const char* nome, size_t tam){
+bool verificaNome(const char* strNome, size_t tam){
 
     FILE *arq;
-    arq = fopen(nome, "r");
+    arq = fopen(strNome, "r");
     if(arq){
         fclose(arq);
         return true;
-    }
+    }   
     return false;
 }
 
+// Verifica se e um arquivo de codigo fonte C (.c), retorna true se for, false se não. 
+bool verificaExtensao(const char* strNome);
+
 // Cria um processo filho, exibe as somas das linhas no terminal.
 pid_t processoPai(){
-    
+
+    TempoExecucao t;
+
     pid_t pid = fork();
     time_t tempoInicio, tempoFinal;
-    clock_t duracao = clock();
     if(pid == 0){
         processoFilho();
     }else{
@@ -63,18 +67,7 @@ pid_t processoPai(){
         int status;
         waitpid(pid, &status, 0);
         tempoFinal = time(NULL);
-        printf("\n- Código Fonte C:\n");
-        printf("\tNº de arquivos = \n");
-        printf("\tLinhas vazias = \n");
-        printf("\tLinhas de comentários = \n");
-        printf("\tLinhas de instruções = \n");
-
-        printf("\n- Tempo:\n");
-        printf("\tInício.....: %s\n", asctime(gmtime(&tempoInicio)));
-        printf("\tTérmino: %s\n", asctime(gmtime(&tempoFinal)));
-        duracao = clock() - duracao;
-        printf("\tDuração: %lf Segundos\n", ((double)duracao)/((CLOCKS_PER_SEC/1000)));
-
+        saidaPadrao(t);
         exit(EXIT_SUCCESS);
     }
 }
@@ -87,4 +80,22 @@ void processoFilho(){
     printf("\tProcesso Filho %d finaliza...\n", pidFilho);
     
     exit(EXIT_SUCCESS);
+}
+
+// Exibe o prompt de saida padrao.
+void saidaPadrao(TempoExecucao t) {
+
+    t.tempoDeExecucao = clock();
+
+    printf("\n- Código Fonte C:\n");
+    printf("\tNº de arquivos = \n");
+    printf("\tLinhas vazias = \n");
+    printf("\tLinhas de comentários = \n");
+    printf("\tLinhas de instruções = \n");
+
+    printf("\n- Tempo:\n");
+    printf("\tInício.....: \n");
+    printf("\tTérmino: \n");
+    t.tempoDeExecucao = clock() - t.tempoDeExecucao;
+    printf("\tDuração: %.0lf Segundos\n\n", ((double)t.tempoDeExecucao)/((CLOCKS_PER_SEC/1000)));
 }
